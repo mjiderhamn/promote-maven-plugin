@@ -21,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.maven.artifact.Artifact;
@@ -49,7 +50,9 @@ public class MakePromotablePromotionMojo extends AbstractMojo {
     Artifact artifact = project.getArtifact();
     if(artifact != null) {
       getLog().info("Artifact: " + artifact.getId());
-      artifactInfo.putAll(PromoteUtils.toMap(artifact, "artifact", target));
+      Map<String, String> artifactProperties = PromoteUtils.toMap(artifact, "artifact", target);
+      getLog().debug("Artifact properties: " + artifactProperties);
+      artifactInfo.putAll(artifactProperties);
     }
     else
       getLog().debug("No main artifact found");
@@ -59,7 +62,9 @@ public class MakePromotablePromotionMojo extends AbstractMojo {
       for(int i = 0; i < attachedArtifacts.size(); i++) {
         Artifact attachedArtifact = attachedArtifacts.get(0);
         getLog().info("Attached artifact: " + attachedArtifact.getId());
-        artifactInfo.putAll(PromoteUtils.toMap(attachedArtifact, "attached." + i, target));
+        Map<String, String> artifactProperties = PromoteUtils.toMap(attachedArtifact, "attached." + i, target);
+        getLog().debug("Attached artifact properties: " + artifactProperties);
+        artifactInfo.putAll(artifactProperties);
       }
     }
 

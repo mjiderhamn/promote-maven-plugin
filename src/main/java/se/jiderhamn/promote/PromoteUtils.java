@@ -33,7 +33,8 @@ class PromoteUtils {
     output.put(prefix + "groupId", artifact.getGroupId());
     output.put(prefix + "artifactId", artifact.getArtifactId());
     output.put(prefix + "version", artifact.getVersion());
-    output.put(prefix + "scope", artifact.getScope()); // Irrelevant
+    if(artifact.getScope() != null)
+      output.put(prefix + "scope", artifact.getScope()); // Irrelevant
     // scope is not relevant
     output.put(prefix + "type", artifact.getType());
     if(artifact.getClassifier() != null)
@@ -53,7 +54,7 @@ class PromoteUtils {
     if(input == null || ! input.containsKey(prefix + "id"))
       return null;
     
-    String id = input.getProperty(prefix + "id");
+    // String id = input.getProperty(prefix + "id");
     String groupId = input.getProperty(prefix + "groupId");
     String artifactId = input.getProperty(prefix + "artifactId");
     String version = input.getProperty(prefix + "version"); // TODO Use version from release:prepare
