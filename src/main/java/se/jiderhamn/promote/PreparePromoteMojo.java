@@ -30,8 +30,8 @@ import org.codehaus.plexus.util.PropertyUtils;
 
 /**
  */
-@Mojo( name = "init", requiresProject = true /*, defaultPhase = LifecyclePhase.PROCESS_SOURCES */ ) // TODO Rename
-public class InitMojo extends AbstractMojo {
+@Mojo( name = "prepare", requiresProject = true /*, defaultPhase = LifecyclePhase.PROCESS_SOURCES */ )
+public class PreparePromoteMojo extends AbstractMojo {
 
   /**
    * The maven project.
@@ -43,7 +43,7 @@ public class InitMojo extends AbstractMojo {
     File promotePropertiesFile = PromoteUtils.getPromotePropertiesFile(project);
     if(! promotePropertiesFile.exists()) {
       getLog().warn("Cannot find " + promotePropertiesFile + ". Remember to run the " + 
-          MakePromotablePromotionMojo.NAME + " goal after building the artifacts.");
+          MakePromotableMojo.NAME + " goal after building the artifacts.");
     }
     Properties props = PropertyUtils.loadProperties(promotePropertiesFile);
     getLog().info("Artifact information read from " + promotePropertiesFile);
@@ -73,32 +73,12 @@ public class InitMojo extends AbstractMojo {
       attachedArtifact.setRelease(true);
       project.addAttachedArtifact(attachedArtifact);
     }
-
-
-    /*
-    File pomFile = project.getFile();
-
-    Artifact artifact = project.getArtifact();
-    // TODO artifact.setRelease( true );
-    getLog().info("artifact: " + artifact);
-    if(artifact != null) {
-      getLog().info("artifact file: " + artifact.getFile());
-    }
     
-    
-    for(Method method : project.getClass().getDeclaredMethods()) {
-      if(method.getName().startsWith("get")) {
-        method.setAccessible(true);
-        try {
-          Object value = method.invoke(project);
-          getLog().info(method.getName() + " => " + value);
-        }
-        catch (Throwable e) {
-          // getLog().error(e);
-        }
-      }
-    }
-    */
+    // TODO Allow configuring preparationGoals or completionGoals  
+    // http://maven.apache.org/maven-release/maven-release-plugin/prepare-mojo.html#preparationGoals
+    // http://maven.apache.org/maven-release/maven-release-plugin/prepare-mojo.html#completionGoals
+    // TODO Make this an option project.getProperties().setProperty("preparationGoals", "deploy:deploy");
+    project.getProperties().setProperty("completionGoals", "deploy:deploy"); // Deploy once release version pom has been committed/tagged/pushed
   }
 
   private void validateArtifact(Artifact artifact) {
