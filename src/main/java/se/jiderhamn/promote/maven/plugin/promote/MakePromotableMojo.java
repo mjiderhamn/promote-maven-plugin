@@ -1,4 +1,4 @@
-package se.jiderhamn.promote;
+package se.jiderhamn.promote.maven.plugin.promote;
 
 /*
  * Copyright 2001-2005 The Apache Software Foundation.

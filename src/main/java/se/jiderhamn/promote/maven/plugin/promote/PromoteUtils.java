@@ -1,4 +1,4 @@
-package se.jiderhamn.promote;
+package se.jiderhamn.promote.maven.plugin.promote;
 
 import java.io.File;
 import java.net.URI;
