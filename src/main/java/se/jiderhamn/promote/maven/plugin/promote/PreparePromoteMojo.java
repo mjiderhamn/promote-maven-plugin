@@ -16,78 +16,29 @@ package se.jiderhamn.promote.maven.plugin.promote;
  * limitations under the License.
  */
 
-import java.io.File;
-import java.net.URI;
-import java.util.Properties;
-
-import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
-import org.codehaus.plexus.util.PropertyUtils;
 
 /**
+ * Mojo that configures the <a href="http://maven.apache.org/maven-release/maven-release-plugin/prepare-mojo.html#preparationGoals">preparationGoals</a>
+ * of the {@code release:prepare} goal, so that we can capture the released version.
  */
 @Mojo( name = "prepare", requiresProject = true /*, defaultPhase = LifecyclePhase.PROCESS_SOURCES */ )
 public class PreparePromoteMojo extends AbstractMojo {
 
-  /**
-   * The maven project.
-   */
-   @Parameter(property = "project")
-   private MavenProject project;
-  
+  /** The maven project */
+  @Parameter(property = "project")
+  private MavenProject project;
+
   public void execute() throws MojoExecutionException {
-    File promotePropertiesFile = PromoteUtils.getPromotePropertiesFile(project);
-    if(! promotePropertiesFile.exists()) {
-      getLog().warn("Cannot find " + promotePropertiesFile + ". Remember to run the " + 
-          MakePromotableMojo.NAME + " goal after building the artifacts.");
-    }
-    Properties props = PropertyUtils.loadProperties(promotePropertiesFile);
-    getLog().info("Artifact information read from " + promotePropertiesFile);
-    getLog().debug("Read properties: " + props);
+    // TODO Document  
+    project.getProperties().setProperty("preparationGoals", PromoteUtils.GOAL_PREFIX + WriteVersionMojo.NAME);
+    // project.getProperties().setProperty("preparationGoals", "deploy:deploy"); // Does not seem to work 
 
-    URI targetURI = PromoteUtils.getTargetURI(project);
-    Artifact artifact = PromoteUtils.fromProperties(props, "artifact", targetURI);
-
-    if(artifact != null) {
-      validateArtifact(artifact);
-      
-      // Set artifact as being artifact of project
-      getLog().info("Setting artifact: " + artifact);
-      artifact.setRelease(true);
-      project.setArtifact(artifact);
-    }
-    
-    for(int i = 0; ; i++) {
-      Artifact attachedArtifact = PromoteUtils.fromProperties(props, "attached." + i, targetURI);
-      if(attachedArtifact == null)
-        break; // No more attached artifacts
-      
-      validateArtifact(attachedArtifact);
-      
-      // Attach artifact to project
-      getLog().info("Attaching artifact: " + artifact);
-      attachedArtifact.setRelease(true);
-      project.addAttachedArtifact(attachedArtifact);
-    }
-    
-    // TODO Allow configuring preparationGoals or completionGoals  
-    // http://maven.apache.org/maven-release/maven-release-plugin/prepare-mojo.html#preparationGoals
     // http://maven.apache.org/maven-release/maven-release-plugin/prepare-mojo.html#completionGoals
-    // TODO Make this an option project.getProperties().setProperty("preparationGoals", "deploy:deploy");
-    project.getProperties().setProperty("completionGoals", "deploy:deploy"); // Deploy once release version pom has been committed/tagged/pushed
-  }
-
-  private void validateArtifact(Artifact artifact) {
-    File file = artifact.getFile();
-    if(file == null) {
-      getLog().error("No file registered for artifact: " + artifact);
-    }
-    else if(! file.exists()) {
-      getLog().error("File for artifact " + artifact + " does not exist: " + file);
-    }
+    // project.getProperties().setProperty("completionGoals", "deploy:deploy"); // Deploy once release version pom has been committed/tagged/pushed - Does not seem to work 
   }
 }
