@@ -1,4 +1,4 @@
-package se.jiderhamn.promote.maven.plugin.promote;
+package se.jiderhamn.promote.maven.plugin;
 
 import java.io.File;
 import java.io.FileOutputStream;
