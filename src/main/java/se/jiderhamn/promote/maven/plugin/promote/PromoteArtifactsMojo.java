@@ -35,6 +35,7 @@ import org.codehaus.plexus.util.PropertyUtils;
 public class PromoteArtifactsMojo extends AbstractMojo {
 
   public static final String NAME = "artifacts";
+
   /**
    * The maven project.
    */
@@ -59,7 +60,8 @@ public class PromoteArtifactsMojo extends AbstractMojo {
       
       // Set artifact as being artifact of project
       getLog().info("Setting artifact: " + artifact);
-      artifact.setVersion(project.getVersion());
+      final String releasedVersion = PromoteUtils.getReleasedVersion(project.getBasedir(), artifact);
+      artifact.setVersion(releasedVersion != null ? releasedVersion : project.getVersion());
       artifact.setRelease(true);
       project.setArtifact(artifact);
     }
@@ -73,7 +75,8 @@ public class PromoteArtifactsMojo extends AbstractMojo {
       
       // Attach artifact to project
       getLog().info("Attaching artifact: " + attachedArtifact);
-      attachedArtifact.setVersion(project.getVersion());
+      final String releasedVersion = PromoteUtils.getReleasedVersion(project.getBasedir(), attachedArtifact);
+      attachedArtifact.setVersion(releasedVersion != null ? releasedVersion : project.getVersion());
       attachedArtifact.setRelease(true);
       project.addAttachedArtifact(attachedArtifact);
     }

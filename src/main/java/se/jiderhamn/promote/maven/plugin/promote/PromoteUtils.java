@@ -29,7 +29,7 @@ import static org.codehaus.plexus.util.StringUtils.isBlank;
 class PromoteUtils {
 
   /** Prefix to use when configuring goals programatically */
-  public static final String GOAL_PREFIX = "se.jiderhamn:promote:";
+  public static final String GOAL_PREFIX = "promote:"; // "se.jiderhamn:promote:";
   
   /** File in which artifact information is stored between the build and the promotion */
   static final String FILENAME = "promotable-artifacts.properties";

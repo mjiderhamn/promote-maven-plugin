@@ -23,8 +23,11 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
 /**
- * Mojo that configures the <a href="http://maven.apache.org/maven-release/maven-release-plugin/prepare-mojo.html#preparationGoals">preparationGoals</a>
- * of the {@code release:prepare} goal, so that we can capture the released version.
+ * Mojo that configures the <a href="http://maven.apache.org/maven-release/maven-release-plugin/prepare-mojo.html#completionGoals">completionGoals</a>
+ * of the {@code release:prepare} goal to perform the actual promotion i.e. deployment of artifacts.
+ * It also configures <a href="http://maven.apache.org/maven-release/maven-release-plugin/prepare-mojo.html#preparationGoals">preparationGoals</a>
+ * to {@code promote:no-op}. This means this can either be provided on the command line, before <code>release:prepare</code>
+ * or as the {@code preparationGoals} 
  */
 @Mojo( name = "prepare", requiresProject = true /*, defaultPhase = LifecyclePhase.PROCESS_SOURCES */ )
 public class PreparePromoteMojo extends AbstractMojo {
@@ -34,11 +37,10 @@ public class PreparePromoteMojo extends AbstractMojo {
   private MavenProject project;
 
   public void execute() throws MojoExecutionException {
-    // TODO Document  
-    project.getProperties().setProperty("preparationGoals", PromoteUtils.GOAL_PREFIX + WriteVersionMojo.NAME);
-    // project.getProperties().setProperty("preparationGoals", "deploy:deploy"); // Does not seem to work 
+    project.getProperties().setProperty("preparationGoals", PromoteUtils.GOAL_PREFIX + NoOpMojo.NAME);
+    project.getProperties().setProperty("completionGoals", 
+        PromoteUtils.GOAL_PREFIX + PromoteArtifactsMojo.NAME + " deploy:deploy");
 
-    // http://maven.apache.org/maven-release/maven-release-plugin/prepare-mojo.html#completionGoals
-    // project.getProperties().setProperty("completionGoals", "deploy:deploy"); // Deploy once release version pom has been committed/tagged/pushed - Does not seem to work 
+    // TODO Auto disable release:perform
   }
 }
