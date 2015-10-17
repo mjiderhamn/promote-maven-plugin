@@ -71,7 +71,7 @@ class PromoteUtils {
     // String id = input.getProperty(prefix + "id");
     String groupId = input.getProperty(prefix + "groupId");
     String artifactId = input.getProperty(prefix + "artifactId");
-    String version = input.getProperty(prefix + "version"); // TODO Use version from release:prepare
+    String version = input.getProperty(prefix + "version");
     String type = input.getProperty(prefix + "type");
     String scope = input.getProperty(prefix + "scope");
     String classifier = input.getProperty(prefix + "classifier");
