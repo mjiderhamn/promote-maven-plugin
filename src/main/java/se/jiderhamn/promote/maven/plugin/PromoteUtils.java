@@ -139,6 +139,7 @@ class PromoteUtils {
   }
   
   // TODO Use this as a fallback
+  /** Read release descriptor to find the release version of the given artifact */
   static String getReleasedVersion(File basedir, Artifact artifact) throws MojoExecutionException {
     if(basedir == null)
       throw new MojoExecutionException("Basedir must be provided"); 

@@ -30,6 +30,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
 /**
+ * TODO Document
  * TODO Always release:clean also
  */
 @Mojo(name = MakePromotableMojo.NAME, requiresProject = true, defaultPhase = LifecyclePhase.PACKAGE)
