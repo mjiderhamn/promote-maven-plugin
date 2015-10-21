@@ -48,7 +48,7 @@ In the former case, the [preparationGoals](http://maven.apache.org/maven-release
 will be set to `promote:no-op` that does nothing. In both cases, the [completionGoals](http://maven.apache.org/maven-release/maven-release-plugin/prepare-mojo.html#completionGoals)
 will be set to `promote:artifacts deploy:deploy`, that deploys the snapshot artifacts as release artifacts.
 
-Note that `release:perform` should *not* be invoked.
+Note that `release:perform` should *not* be invoked. For that reason, you may also want to add `release:clean`.
 
 ## Goals
 
