@@ -53,7 +53,7 @@ class PromoteUtils {
     output.put(prefix + "type", artifact.getType());
     if(artifact.getClassifier() != null)
       output.put(prefix + "classifier", artifact.getClassifier());
-    if(artifact.getFile() != null) // TODO Return Empty map if null?
+    if(artifact.getFile() != null) // Will be null for POM artifacts
       output.put(prefix + "file", relativize(basePath, artifact.getFile()));
     
     // TODO ?
@@ -97,12 +97,14 @@ class PromoteUtils {
   }
   
   private static ArtifactHandler newHandler(String type, String path) {
-    final String extension = FileUtils.extension(path);
+    final String extension = (path == null) ? "" : FileUtils.extension(path);
     if(isBlank(type)) {
       type = extension;
     }
     DefaultArtifactHandler handler = new DefaultArtifactHandler(type);
-    handler.setExtension(extension);
+    if(! isBlank(extension)) {
+      handler.setExtension(extension);
+    }
     return handler;
   }
   
