@@ -9,16 +9,12 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.shared.release.config.PropertiesReleaseDescriptorStore;
-import org.apache.maven.shared.release.config.ReleaseDescriptor;
-import org.apache.maven.shared.release.config.ReleaseDescriptorStoreException;
 import org.codehaus.plexus.util.FileUtils;
 
 import static org.codehaus.plexus.util.StringUtils.isBlank;
@@ -76,6 +72,8 @@ class PromoteUtils {
     String scope = input.getProperty(prefix + "scope");
     String classifier = input.getProperty(prefix + "classifier");
     String relativePath = input.getProperty(prefix + "file");
+    
+    // Compare to org.apache.maven.bridge.MavenRepositorySystem.createArtifact()
     
     Artifact output = new DefaultArtifact(groupId, artifactId, version, scope, type, classifier, 
         newHandler(type, relativePath));
@@ -137,30 +135,6 @@ class PromoteUtils {
     }
     catch (IOException e) {
       throw new MojoExecutionException("Error writing artifacts to file", e);
-    }
-  }
-  
-  // TODO Use this as a fallback
-  /** Read release descriptor to find the release version of the given artifact */
-  static String getReleasedVersion(File basedir, Artifact artifact) throws MojoExecutionException {
-    if(basedir == null)
-      throw new MojoExecutionException("Basedir must be provided"); 
-    
-    try {
-      PropertiesReleaseDescriptorStore descriptorStore = new PropertiesReleaseDescriptorStore();
-      ReleaseDescriptor releaseDescriptor = new ReleaseDescriptor();
-      releaseDescriptor.setWorkingDirectory(basedir.getAbsolutePath());
-      releaseDescriptor = descriptorStore.read(releaseDescriptor);
-
-      // "groupId:artifactId"=version
-      String key = ArtifactUtils.versionlessKey(artifact);
-      return (String) releaseDescriptor.getReleaseVersions().get(key); 
-    }
-    catch (ReleaseDescriptorStoreException e) {
-      throw new MojoExecutionException("Error parsing release descriptor", e);
-    }
-    catch (NullPointerException e) { // No release.properties found
-      return null;
     }
   }
 }

@@ -18,14 +18,19 @@ package se.jiderhamn.promote.maven.plugin;
 
 import java.io.File;
 import java.net.URI;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.shared.release.config.PropertiesReleaseDescriptorStore;
+import org.apache.maven.shared.release.config.ReleaseDescriptor;
+import org.apache.maven.shared.release.config.ReleaseDescriptorStoreException;
 import org.codehaus.plexus.util.PropertyUtils;
 
 /**
@@ -59,8 +64,8 @@ public class PromoteArtifactsMojo extends AbstractMojo {
       validateArtifact(artifact);
       
       // Set artifact as being artifact of project
-      getLog().info("Setting artifact: " + artifact);
-      final String releasedVersion = PromoteUtils.getReleasedVersion(project.getBasedir(), artifact);
+      final String releasedVersion = getReleasedVersion(project, artifact);
+      getLog().info("Setting artifact: " + artifact + "; released version " + releasedVersion);
       artifact.setVersion(releasedVersion != null ? releasedVersion : project.getVersion());
       artifact.setRelease(true);
       project.setArtifact(artifact);
@@ -74,8 +79,8 @@ public class PromoteArtifactsMojo extends AbstractMojo {
       validateArtifact(attachedArtifact);
       
       // Attach artifact to project
-      getLog().info("Attaching artifact: " + attachedArtifact);
-      final String releasedVersion = PromoteUtils.getReleasedVersion(project.getBasedir(), attachedArtifact);
+      final String releasedVersion = getReleasedVersion(project, attachedArtifact);
+      getLog().info("Attaching artifact: " + attachedArtifact + "; released version " + releasedVersion);
       attachedArtifact.setVersion(releasedVersion != null ? releasedVersion : project.getVersion());
       attachedArtifact.setRelease(true);
       project.addAttachedArtifact(attachedArtifact);
@@ -91,4 +96,38 @@ public class PromoteArtifactsMojo extends AbstractMojo {
       getLog().error("File for artifact " + artifact + " does not exist: " + file);
     }
   }
+  
+  /** Read release descriptor to find the release version of the given artifact */
+  private String getReleasedVersion(MavenProject project, Artifact artifact) throws MojoExecutionException {
+    if(project == null || project.getBasedir() == null)
+      throw new MojoExecutionException("Basedir must be provided for project " + project); 
+    
+    try {
+      PropertiesReleaseDescriptorStore descriptorStore = new PropertiesReleaseDescriptorStore();
+      ReleaseDescriptor releaseDescriptor = new ReleaseDescriptor();
+      releaseDescriptor.setWorkingDirectory(project.getBasedir().getAbsolutePath());
+      releaseDescriptor = descriptorStore.read(releaseDescriptor);
+
+      // "groupId:artifactId" -> version
+      final Map<String, String> releaseVersions = releaseDescriptor.getReleaseVersions();
+      getLog().debug("Read versions from " + project.getBasedir() + ": " + releaseVersions);
+
+      final String key = ArtifactUtils.versionlessKey(artifact);
+      if(releaseVersions.containsKey(key))
+        return releaseVersions.get(key);
+      else if (project.hasParent() && project.getParent().getBasedir() != null) {
+        getLog().debug("No version for " + key + " found in " + project + "; looking in parent ");
+        return getReleasedVersion(project.getParent(), artifact);
+      }
+      else 
+        return null;
+    }
+    catch (ReleaseDescriptorStoreException e) {
+      throw new MojoExecutionException("Error parsing release descriptor", e);
+    }
+    catch (NullPointerException e) { // No release.properties found
+      return null;
+    }
+  }
+  
 }
