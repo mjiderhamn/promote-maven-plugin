@@ -102,6 +102,7 @@ public class PromoteArtifactsMojo extends AbstractMojo {
     if(project == null || project.getBasedir() == null)
       throw new MojoExecutionException("Basedir must be provided for project " + project); 
     
+    final String key = ArtifactUtils.versionlessKey(artifact);
     try {
       PropertiesReleaseDescriptorStore descriptorStore = new PropertiesReleaseDescriptorStore();
       ReleaseDescriptor releaseDescriptor = new ReleaseDescriptor();
@@ -112,22 +113,22 @@ public class PromoteArtifactsMojo extends AbstractMojo {
       final Map<String, String> releaseVersions = releaseDescriptor.getReleaseVersions();
       getLog().debug("Read versions from " + project.getBasedir() + ": " + releaseVersions);
 
-      final String key = ArtifactUtils.versionlessKey(artifact);
       if(releaseVersions.containsKey(key))
         return releaseVersions.get(key);
-      else if (project.hasParent() && project.getParent().getBasedir() != null) {
-        getLog().debug("No version for " + key + " found in " + project + "; looking in parent ");
-        return getReleasedVersion(project.getParent(), artifact);
-      }
-      else 
-        return null;
     }
     catch (ReleaseDescriptorStoreException e) {
       throw new MojoExecutionException("Error parsing release descriptor", e);
     }
     catch (NullPointerException e) { // No release.properties found
-      return null;
+      getLog().debug("Error finding release descriptor", e);
     }
+
+    if (project.hasParent() && project.getParent().getBasedir() != null) {
+      getLog().debug("No version for " + key + " found in " + project + "; looking in parent ");
+      return getReleasedVersion(project.getParent(), artifact);
+    }
+    else 
+      return null;
   }
   
 }
