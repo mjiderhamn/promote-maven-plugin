@@ -10,7 +10,7 @@ Add this to your `pom.xml`:
       <plugin>
         <groupId>se.jiderhamn</groupId>
         <artifactId>promote-maven-plugin</artifactId>
-        <version>0.1.6</version>
+        <version>0.5.1</version>
         <!-- Automatically execute promote:make-promotable after each snapshot build -->
         <executions>
           <execution>
@@ -20,17 +20,11 @@ Add this to your `pom.xml`:
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <artifactId>maven-release-plugin</artifactId>
-        <configuration>
-          <preparationGoals>promote:artifacts deploy:deploy</preparationGoals>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
 ```
 
-Build your snapshot at usual, say
+Build your snapshot as usual, say
 ```
 mvn clean package
 ```
