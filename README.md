@@ -58,17 +58,25 @@ For [Jenkins](https://jenkins.io/), it is recommended to combine this Maven plug
 Configure a normal Maven Jenkins project, and set _Build_ / _Goals and options_ as usual, say `clean install`. (This assumes
 you've configured `promote:make-promotable` to be executed automatically as of above.)
 
+[![Jenkins Build](https://cdn.rawgit.com/mjiderhamn/promote-maven-plugin/master/images/jenkins_build_65p.png)](https://cdn.rawgit.com/mjiderhamn/promote-maven-plugin/master/images/jenkins_build.png)
+
 Create a manually triggered promotion (_Promote builds when..._ + _Only when manually approved_) and select a _Name_ and an _Icon_.
 (Unfortunately, the _Name_ cannot currently contain any variables, which would have allowed hoovering the icon/badge to see the 
-released version. See [JENKINS-31725](https://issues.jenkins-ci.org/browse/JENKINS-31725).) 
+released version. Please vote for [JENKINS-31725](https://issues.jenkins-ci.org/browse/JENKINS-31725)!)
 
-Use _Add Parameter_ to add 2 _String Parameter_s, one named `releaseVersion` and another named `developmentVersion`
-(as per the [`release:prepare` goal of the Maven Releas Plugin](https://maven.apache.org/maven-release/maven-release-plugin/prepare-mojo.html).
+Use _Add Parameter_ to add 2 _String Parameter_ s, one named `releaseVersion` and another named `developmentVersion`
+(as per the [`release:prepare` goal of the Maven Release Plugin](https://maven.apache.org/maven-release/maven-release-plugin/prepare-mojo.html)).
+
+[![Approval Parameters](https://cdn.rawgit.com/mjiderhamn/promote-maven-plugin/master/images/jenkins_promote_parameters_65p.png)](https://cdn.rawgit.com/mjiderhamn/promote-maven-plugin/master/images/jenkins_promote_parameters.png)
 
 _Add action_: _Invoke top-level Maven targets_ and set _Goals_ to `release:clean promote:prepare release:prepare`.
 
+[![Promote Action](https://cdn.rawgit.com/mjiderhamn/promote-maven-plugin/master/images/jenkins_promote_actions_65p.png)](https://cdn.rawgit.com/mjiderhamn/promote-maven-plugin/master/images/jenkins_promote_actions.png)
+
 Now it will be possible to manually promote the latest `-SNAPSHOT` build, allowing you to set the version of the release and the
 SNAPSHOT version of the next development iteration, just like you would with a normal Maven release. 
+
+[![Promote Approve](https://cdn.rawgit.com/mjiderhamn/promote-maven-plugin/master/images/jenkins_promote_approve_65p.png)](https://cdn.rawgit.com/mjiderhamn/promote-maven-plugin/master/images/jenkins_promote_approve.png)
 
 ## Goals
 These are the Maven goals defined by this plugin
@@ -94,4 +102,4 @@ If this is a problem, then this plugin is not for you.
 
 Even though it would have been theoretically possible for the plugin to rename the JAR inside the WAR that would defeat the purpose
 of the plugin. Unless we promote the exact same (binary) artifacts, it is per definition not a promotion but some kind of new 
-build, and then you may as well use the ordinary [Maven Releas Plugin](https://maven.apache.org/maven-release/maven-release-plugin/).
+build, and then you may as well use the ordinary [Maven Release Plugin](https://maven.apache.org/maven-release/maven-release-plugin/).
