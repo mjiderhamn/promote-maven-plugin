@@ -3,7 +3,7 @@
 
   <groupId>se.jiderhamn</groupId>
   <artifactId>promote-maven-plugin</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
 
   <name>promote-maven-plugin Maven Plugin</name>
@@ -15,7 +15,7 @@
     <connection>scm:git:git@github.com:mjiderhamn/promote-maven-plugin.git</connection>
     <developerConnection>scm:git:git@github.com:mjiderhamn/promote-maven-plugin.git</developerConnection>
     <url>https://github.com/mjiderhamn/promote-maven-plugin.git</url>
-    <tag>promote-maven-plugin-1.0.1</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <!-- Configure Release: http://central.sonatype.org/pages/apache-maven.html -->
