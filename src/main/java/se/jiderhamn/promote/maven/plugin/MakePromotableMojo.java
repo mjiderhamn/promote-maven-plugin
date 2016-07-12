@@ -60,7 +60,7 @@ public class MakePromotableMojo extends AbstractMojo {
     List<Artifact> attachedArtifacts = project.getAttachedArtifacts();
     if(! attachedArtifacts.isEmpty()) {
       for(int i = 0; i < attachedArtifacts.size(); i++) {
-        Artifact attachedArtifact = attachedArtifacts.get(0);
+        Artifact attachedArtifact = attachedArtifacts.get(i);
         getLog().info("Attached artifact: " + attachedArtifact.getId());
         Map<String, String> artifactProperties = PromoteUtils.toMap(attachedArtifact, "attached." + i, target);
         getLog().debug("Attached artifact properties: " + artifactProperties);
