@@ -14,7 +14,7 @@ Add this to your `pom.xml`:
       <plugin>
         <groupId>se.jiderhamn</groupId>
         <artifactId>promote-maven-plugin</artifactId>
-        <version>1.0.1</version>
+        <version>1.0.2</version>
         <!-- Automatically execute promote:make-promotable after each snapshot build -->
         <executions>
           <execution>
