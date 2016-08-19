@@ -18,6 +18,7 @@ package se.jiderhamn.promote.maven.plugin;
 
 import java.io.File;
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -70,12 +71,9 @@ public class PromoteArtifactsMojo extends AbstractMojo {
       artifact.setRelease(true);
       project.setArtifact(artifact);
     }
-    
-    for(int i = 0; ; i++) {
-      Artifact attachedArtifact = PromoteUtils.fromProperties(props, "attached." + i, targetURI);
-      if(attachedArtifact == null)
-        break; // No more attached artifacts
-      
+
+    final List<Artifact> attachedArtifacts = PromoteUtils.attachedArtifactsFromProperties(props, targetURI);
+    for(Artifact attachedArtifact : attachedArtifacts) {
       validateArtifact(attachedArtifact);
       
       // Attach artifact to project

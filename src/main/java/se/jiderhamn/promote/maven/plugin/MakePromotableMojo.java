@@ -16,6 +16,7 @@ package se.jiderhamn.promote.maven.plugin;
  * limitations under the License.
  */
 
+import java.io.File;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.util.PropertyUtils;
 
 /**
  * TODO Document
@@ -43,14 +45,24 @@ public class MakePromotableMojo extends AbstractMojo {
   private MavenProject project;
 
   public void execute() throws MojoExecutionException {
-    final URI target = PromoteUtils.getTargetURI(project);
+    final URI targetURI = PromoteUtils.getTargetURI(project);
 
     Properties artifactInfo = new Properties();
+    int firstAttachedArtifactIndex = 0; // Assume no existing attached artifacts
+    final File promotePropertiesFile = PromoteUtils.getPromotePropertiesFile(project);
+    if(promotePropertiesFile.exists()) { // Existing promote properties exist, let's add to those
+      artifactInfo = PropertyUtils.loadProperties(promotePropertiesFile);
+      getLog().info("Existing artifact information read from " + promotePropertiesFile);
+      getLog().debug("Read properties: " + artifactInfo);
+      
+      final List<Artifact> attachedArtifacts = PromoteUtils.attachedArtifactsFromProperties(artifactInfo, targetURI);
+      firstAttachedArtifactIndex = attachedArtifacts.size(); // Continue index after existing
+    }
 
     Artifact artifact = project.getArtifact();
     if(artifact != null) {
       getLog().info("Artifact: " + artifact.getId());
-      Map<String, String> artifactProperties = PromoteUtils.toMap(artifact, "artifact", target);
+      Map<String, String> artifactProperties = PromoteUtils.toMap(artifact, "artifact", targetURI);
       getLog().debug("Artifact properties: " + artifactProperties);
       artifactInfo.putAll(artifactProperties);
     }
@@ -62,7 +74,7 @@ public class MakePromotableMojo extends AbstractMojo {
       for(int i = 0; i < attachedArtifacts.size(); i++) {
         Artifact attachedArtifact = attachedArtifacts.get(i);
         getLog().info("Attached artifact: " + attachedArtifact.getId());
-        Map<String, String> artifactProperties = PromoteUtils.toMap(attachedArtifact, "attached." + i, target);
+        Map<String, String> artifactProperties = PromoteUtils.toMap(attachedArtifact, "attached." + (i + firstAttachedArtifactIndex), targetURI);
         getLog().debug("Attached artifact properties: " + artifactProperties);
         artifactInfo.putAll(artifactProperties);
       }

@@ -4,9 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
@@ -55,6 +53,22 @@ class PromoteUtils {
     // TODO ?
     output.put(prefix + "baseVersion", artifact.getBaseVersion());
 
+    return output;
+  }
+  
+  /** Parse list of attached {@link Artifact}s from {@link Properties} */
+  static List<Artifact> attachedArtifactsFromProperties(Properties props, URI basePath) {
+    List<Artifact> output = new ArrayList<Artifact>();
+    
+    for(int i = 0; ; i++) {
+      Artifact attachedArtifact = PromoteUtils.fromProperties(props, "attached." + i, basePath);
+      if(attachedArtifact != null) {
+        output.add(attachedArtifact);
+      }
+      else 
+        break; // No more attached artifacts
+    }
+    
     return output;
   }
 
