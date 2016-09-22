@@ -1,3 +1,7 @@
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/se.jiderhamn/promote-maven-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/se.jiderhamn/promote-maven-plugin/)
+[![License](https://img.shields.io/badge/license-Apache2-blue.svg?style=flat)](https://github.com/mjiderhamn/promote-maven-plugin/blob/master/LICENSE.txt)
+
+
 # Promote Maven plugin
 
 This is a Maven plugin that allows for promoting the artifacts of the previous snapshot build to a release. This allows you to speed
@@ -14,7 +18,7 @@ Add this to your `pom.xml`:
       <plugin>
         <groupId>se.jiderhamn</groupId>
         <artifactId>promote-maven-plugin</artifactId>
-        <version>1.1.0</version>
+        <version>2.0.0</version>
         <!-- Automatically execute promote:make-promotable after each snapshot build -->
         <executions>
           <execution>
@@ -48,6 +52,11 @@ mvn release:prepare
 ```
 
 Note that `release:perform` should **not** be invoked. For that reason, you may also want to add `release:clean`.
+
+## Migration from 1.x to 2.0
+2.0.0 is a minor change compared to 1.1.0, but since the change to `<preparationGoals>` could break existing 
+configurations, the major version is bumped. If you have added `<preparationGoals>` to your `pom.xml`
+you need to update according to the [Usage](#usage) section above.
 
 ## Jenkins
 You will likely want to use this plugin together with [Continuous Integration](https://en.wikipedia.org/wiki/Continuous_integration),
