@@ -18,6 +18,7 @@ package se.jiderhamn.promote.maven.plugin;
 
 import java.io.File;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -47,6 +48,8 @@ public class MakePromotableMojo extends AbstractMojo {
   public void execute() throws MojoExecutionException {
     final URI targetURI = PromoteUtils.getTargetURI(project);
 
+    List<Artifact> attachedArtifacts = project.getAttachedArtifacts();
+
     Properties artifactInfo = new Properties();
     int firstAttachedArtifactIndex = 0; // Assume no existing attached artifacts
     final File promotePropertiesFile = PromoteUtils.getPromotePropertiesFile(project);
@@ -55,8 +58,11 @@ public class MakePromotableMojo extends AbstractMojo {
       getLog().info("Existing artifact information read from " + promotePropertiesFile);
       getLog().debug("Read properties: " + artifactInfo);
       
-      final List<Artifact> attachedArtifacts = PromoteUtils.attachedArtifactsFromProperties(artifactInfo, targetURI);
-      firstAttachedArtifactIndex = attachedArtifacts.size(); // Continue index after existing
+      final List<Artifact> previouslyAttachedArtifacts = PromoteUtils.attachedArtifactsFromProperties(artifactInfo, targetURI);
+      firstAttachedArtifactIndex = previouslyAttachedArtifacts.size(); // Continue index after existing
+      // Avoid duplicates
+      attachedArtifacts = new ArrayList<Artifact>(attachedArtifacts);
+      attachedArtifacts.removeAll(previouslyAttachedArtifacts);
     }
 
     Artifact artifact = project.getArtifact();
@@ -69,7 +75,6 @@ public class MakePromotableMojo extends AbstractMojo {
     else
       getLog().debug("No main artifact found");
 
-    List<Artifact> attachedArtifacts = project.getAttachedArtifacts();
     if(! attachedArtifacts.isEmpty()) {
       for(int i = 0; i < attachedArtifacts.size(); i++) {
         Artifact attachedArtifact = attachedArtifacts.get(i);
