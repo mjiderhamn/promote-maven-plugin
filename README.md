@@ -18,7 +18,7 @@ Add this to your `pom.xml`:
       <plugin>
         <groupId>se.jiderhamn</groupId>
         <artifactId>promote-maven-plugin</artifactId>
-        <version>2.0.0</version>
+        <version>2.0.1</version>
         <!-- Automatically execute promote:make-promotable after each snapshot build -->
         <executions>
           <execution>
@@ -54,7 +54,7 @@ mvn release:prepare
 Note that `release:perform` should **not** be invoked. For that reason, you may also want to add `release:clean`.
 
 ## Migration from 1.x to 2.0
-2.0.0 is a minor change compared to 1.1.0, but since the change to `<preparationGoals>` could break existing 
+2.0.x is a minor change compared to 1.1.0, but since the change to `<preparationGoals>` could break existing 
 configurations, the major version is bumped. If you have added `<preparationGoals>` to your `pom.xml`
 you need to update according to the [Usage](#usage) section above.
 
