@@ -23,7 +23,7 @@ import static org.codehaus.plexus.util.StringUtils.isBlank;
 class PromoteUtils {
 
   /** Prefix to use when configuring goals programatically */
-  public static final String GOAL_PREFIX = "promote:"; // "se.jiderhamn:promote:";
+  public static final String GOAL_PREFIX = getGoalPrefix(); // "se.jiderhamn:promote-maven-plugin:2.0.2-SNAPSHOT:promote:";
 
   /** File in which artifact information is stored between the build and the promotion */
   static final String FILENAME = "promotable-artifacts.properties";
@@ -32,6 +32,17 @@ class PromoteUtils {
   public static final String RELEASE_VERSION = "releaseVersion";
 
   private PromoteUtils() {}
+
+  private static String getGoalPrefix() {
+    String propertiesFileName = "promote-maven-plugin.properties";
+    try {
+      Properties properties = new Properties();
+      properties.load(PromoteUtils.class.getClassLoader().getResourceAsStream(propertiesFileName));
+      return String.format("%s:%s:%s:", properties.get("groupId"), properties.get("artifactId"), properties.get("version"));
+    } catch (IOException e) {
+      throw new RuntimeException("Could not load properties. " + propertiesFileName);
+    }
+  }
 
   static Map<String, String> toMap(Artifact artifact, String prefix, URI basePath) {
     prefix = fixPrefix(prefix);
@@ -55,20 +66,20 @@ class PromoteUtils {
 
     return output;
   }
-  
+
   /** Parse list of attached {@link Artifact}s from {@link Properties} */
   static List<Artifact> attachedArtifactsFromProperties(Properties props, URI basePath) {
     List<Artifact> output = new ArrayList<Artifact>();
-    
+
     for(int i = 0; ; i++) {
       Artifact attachedArtifact = PromoteUtils.fromProperties(props, "attached." + i, basePath);
       if(attachedArtifact != null) {
         output.add(attachedArtifact);
       }
-      else 
+      else
         break; // No more attached artifacts
     }
-    
+
     return output;
   }
 
